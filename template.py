@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-project_name= "Cardeovascular_Risk_prediction"
+project_name= "src"
 
 list_of_files=[ f"{project_name}/__init__.py",
 
