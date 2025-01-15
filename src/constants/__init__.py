@@ -2,7 +2,10 @@
 import os
 from datetime import date
 
-DATABASE_NAME="demo_project_DB"
+from dotenv import load_dotenv
+load_dotenv()
+
+DATABASE_NAME="Cardeo_vascular_risk_DB"
 
 COLLECTION_NAME="Cardeo_data"
 
