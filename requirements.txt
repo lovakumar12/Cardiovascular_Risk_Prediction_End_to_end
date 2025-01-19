@@ -27,7 +27,7 @@ python-dotenv
 mypy 
 pylint
 xlsxwriter>=1.3.0
-logging
+#logging
 rich
 
 -e .                 
