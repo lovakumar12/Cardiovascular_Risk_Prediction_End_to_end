@@ -1,6 +1,6 @@
 from src.configuration.mongo_db_connection import MongoDBClient
 from src.constants import DATABASE_NAME
-from src.exception import Cardeovascular_risk_exception
+from src.exception import Cardeo_risk_Exception
 import  pandas as pd
 import sys
 from typing import Optional
@@ -19,7 +19,7 @@ class cardeovascular_risk_Data:
         try:
             self.mongo_client = MongoDBClient(database_name=DATABASE_NAME)
         except Exception as e:
-            raise Cardeovascular_risk_exception(e,sys)
+            raise Cardeo_risk_Exception(e,sys)
 
 
     def export_collection_as_dataframe(self,collection_name:str,database_name:Optional[str]=None)->pd.DataFrame:
@@ -39,4 +39,4 @@ class cardeovascular_risk_Data:
             df.replace({"na":np.nan},inplace=True)
             return df
         except Exception as e:
-            raise Cardeovascular_risk_exception(e,sys)
+            raise Cardeo_risk_Exception(e,sys)

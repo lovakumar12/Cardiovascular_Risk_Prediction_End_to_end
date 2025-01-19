@@ -10,7 +10,7 @@ def error_message_detail(error, error_detail:sys):
 
     return error_message
 
-class Cardeovascular_risk_exception(Exception):
+class Cardeo_risk_Exception(Exception):
     def __init__(self, error_message, error_detail):
         """
         :param error_message: error message in string format

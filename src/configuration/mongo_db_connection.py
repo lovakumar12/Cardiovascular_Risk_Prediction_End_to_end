@@ -4,9 +4,9 @@ import sys
 import os
 import pymongo
 import certifi
-from src.exception import Cardeovascular_risk_exception
+from src.exception import Cardeo_risk_Exception
 from src.logger import logging
-from src.constants import DATABASE_NAME, MONGODB_URL_KEY
+from src.constants import DATABASE_NAME, COLLECTION_NAME,MONGODB_URL_KEY
 
 
 
@@ -34,5 +34,5 @@ class MongoDBClient:
             self.database_name = database_name
             logging.info("Connected to MongoDB database successfull")
         except Exception as e:
-            raise Cardeovascular_risk_exception(e,sys)
+            raise Cardeo_risk_Exception(e,sys)
 

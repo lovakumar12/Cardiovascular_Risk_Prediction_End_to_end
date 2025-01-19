@@ -72,42 +72,88 @@
 ################### checking the entity
 
 # this is the code we have to use in demo.py
-from src.entity.config_entity import TrainingPipelineConfig, DataIngestionConfig
-from src.entity.artifact_entity import DataIngestionArtifact
+# from src.entity.config_entity import TrainingPipelineConfig, DataIngestionConfig
+# from src.entity.artifact_entity import DataIngestionArtifact
 
-def main():
-    try:
-        # Initialize TrainingPipelineConfig
-        training_pipeline_config = TrainingPipelineConfig()
-        print("Training Pipeline Config:")
-        print(f"Pipeline Name: {training_pipeline_config.pipeline_name}")
-        print(f"Artifact Directory: {training_pipeline_config.artifact_dir}")
-        print(f"Timestamp: {training_pipeline_config.timestamp}")
+# def main():
+#     try:
+#         # Initialize TrainingPipelineConfig
+#         training_pipeline_config = TrainingPipelineConfig()
+#         print("Training Pipeline Config:")
+#         print(f"Pipeline Name: {training_pipeline_config.pipeline_name}")
+#         print(f"Artifact Directory: {training_pipeline_config.artifact_dir}")
+#         print(f"Timestamp: {training_pipeline_config.timestamp}")
 
-        # Initialize DataIngestionConfig
-        data_ingestion_config = DataIngestionConfig()
-        print("\nData Ingestion Config:")
-        print(f"Data Ingestion Directory: {data_ingestion_config.data_ingestion_dir}")
-        print(f"Feature Store File Path: {data_ingestion_config.feature_store_file_path}")
-        print(f"Training File Path: {data_ingestion_config.training_file_path}")
-        print(f"Testing File Path: {data_ingestion_config.testing_file_path}")
-        print(f"Train-Test Split Ratio: {data_ingestion_config.train_test_split_ratio}")
-        print(f"Collection Name: {data_ingestion_config.collection_name}")
+#         # Initialize DataIngestionConfig
+#         data_ingestion_config = DataIngestionConfig()
+#         print("\nData Ingestion Config:")
+#         print(f"Data Ingestion Directory: {data_ingestion_config.data_ingestion_dir}")
+#         print(f"Feature Store File Path: {data_ingestion_config.feature_store_file_path}")
+#         print(f"Training File Path: {data_ingestion_config.training_file_path}")
+#         print(f"Testing File Path: {data_ingestion_config.testing_file_path}")
+#         print(f"Train-Test Split Ratio: {data_ingestion_config.train_test_split_ratio}")
+#         print(f"Collection Name: {data_ingestion_config.collection_name}")
 
-        # Initialize DataIngestionArtifact with sample file paths
-        sample_trained_path = data_ingestion_config.training_file_path
-        sample_test_path = data_ingestion_config.testing_file_path
-        data_ingestion_artifact = DataIngestionArtifact(
-            trained_file_path=sample_trained_path,
-            test_file_path=sample_test_path,
-        )
+#         # Initialize DataIngestionArtifact with sample file paths
+#         sample_trained_path = data_ingestion_config.training_file_path
+#         sample_test_path = data_ingestion_config.testing_file_path
+#         data_ingestion_artifact = DataIngestionArtifact(
+#             trained_file_path=sample_trained_path,
+#             test_file_path=sample_test_path,
+#         )
 
-        print("\nData Ingestion Artifact:")
-        print(f"Trained File Path: {data_ingestion_artifact.trained_file_path}")
-        print(f"Test File Path: {data_ingestion_artifact.test_file_path}")
+#         print("\nData Ingestion Artifact:")
+#         print(f"Trained File Path: {data_ingestion_artifact.trained_file_path}")
+#         print(f"Test File Path: {data_ingestion_artifact.test_file_path}")
 
-    except Exception as e:
-        print(f"Error occurred: {str(e)}")
+#     except Exception as e:
+#         print(f"Error occurred: {str(e)}")
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
+
+
+################# checking the data_ingension.py
+
+# testing of code of data_ingestin using  demo.py
+# import sys
+# from src.components.data_ingenstion import DataIngestion
+# from src.entity.config_entity import DataIngestionConfig
+# from src.logger import logging
+# from src.exception import Cardeovascular_risk_exception
+
+# def main():
+#     try:
+#         # Initialize DataIngestionConfig
+#         data_ingestion_config = DataIngestionConfig()
+
+#         # Initialize DataIngestion
+#         data_ingestion = DataIngestion(data_ingestion_config=data_ingestion_config)
+
+#         # Start the data ingestion process
+#         data_ingestion_artifact = data_ingestion.initiate_data_ingestion()
+
+#         # Log the results
+#         logging.info(f"Data ingestion completed successfully.")
+#         logging.info(f"Training file path: {data_ingestion_artifact.trained_file_path}")
+#         logging.info(f"Testing file path: {data_ingestion_artifact.test_file_path}")
+
+#         # Print dataset shapes for confirmation
+#         import pandas as pd
+#         train_data = pd.read_csv(data_ingestion_artifact.trained_file_path)
+#         test_data = pd.read_csv(data_ingestion_artifact.test_file_path)
+#         print(f"Training dataset shape: {train_data.shape}")
+#         print(f"Testing dataset shape: {test_data.shape}")
+#     except Exception as e:
+#         logging.error(f"Error occurred during data ingestion: {e}")
+#         print(f"Error occurred during data ingestion: {e}")
+
+# if __name__ == "__main__":
+#     main()
+
+#####################checking the data_validation.py
+#code in demo.py
+
+from src.pipeline.train_pipeline import TrainPipeline
+pipeline=TrainPipeline()
+pipeline.run_pipeline()
