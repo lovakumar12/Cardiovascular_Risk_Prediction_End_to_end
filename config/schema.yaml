@@ -1,0 +1,65 @@
+### config -->schema.yaml
+columns:
+   id: int
+   age: int
+   education: float
+   sex: object
+   is_smoking: object
+   cigsPerDay: float
+   BPMeds: float
+   prevalentStroke: int
+   prevalentHyp: int
+   diabetes: int
+   totChol: float
+   sysBP: float
+   diaBP: float
+   BMI: float
+   heartRate: float
+   glucose: float
+   TenYearCHD: int
+
+dtypes:
+   id: "int64"
+   age: "int64"
+   education: "float64"
+   education: "float64"
+   sex: "object"
+   is_smoking: "object"
+   cigsPerDay: "float64"
+   BPMeds: "float64"
+   prevalentStroke: "int64"
+   prevalentHyp: "int64"
+   diabetes: "int64"
+   totChol: "float64"
+   sysBP: "float64"
+   diaBP: "float64"
+   BMI: "float64"
+   heartRate: "float64"
+   glucose: "float64"
+   TenYearCHD: "int64"
+
+numerical_columns:
+   - id
+   - age
+   - education
+   - cigsPerDay 
+   - BPMeds
+   - prevalentStroke
+   - prevalentHyp
+   - diabetes
+   - totChol
+   - sysBP
+   - diaBP
+   - BMI
+   - heartRate 
+   - glucose
+   - TenYearCHD
+
+categorical_columns:
+   - sex
+   - is_smoking
+
+
+
+  
+
