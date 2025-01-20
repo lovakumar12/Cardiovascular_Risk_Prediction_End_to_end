@@ -9,6 +9,8 @@
 # log_dir = 'logs'
 
 # logs_path = os.path.join(from_root(), log_dir, LOG_FILE)
+# #os.makedirs(os.path.dirname(logs_path), exist_ok=True)
+
 
 # os.makedirs(log_dir, exist_ok=True)
 
@@ -20,28 +22,30 @@
 # )
 
 
+
 import logging
 import os
-from from_root import from_root
 from datetime import datetime
+from from_root import from_root
 
-# Define log file name and directory
 LOG_FILE = f"{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
-log_dir = os.path.join(from_root(), 'logs')  # Ensure the directory is rooted correctly
 
-# Create the logs directory if it doesn't exist
-os.makedirs(log_dir, exist_ok=True)
+log_dir = 'logs'
+#logs_path = os.path.join(from_root(), log_dir, LOG_FILE)
+logs_path=r"C:\Users\kumar\Cardiovascular_Risk_Prediction_End_to_end\logs\test_log.log"
 
-# Complete path for the log file
-logs_path = os.path.join(log_dir, LOG_FILE)
+# Ensure the parent directories are created
+os.makedirs(os.path.dirname(logs_path), exist_ok=True)
 
-# Configure logging
 logging.basicConfig(
     filename=logs_path,
     format="[ %(asctime)s ] %(name)s - %(levelname)s - %(message)s",
     level=logging.DEBUG,
 )
 
-# Example usage
-logger = logging.getLogger(__name__)
-logger.info("Logging is set up correctly.")
+# Add console logging as well
+console_handler = logging.StreamHandler()
+logging.getLogger().addHandler(console_handler)
+
+# Example log statement to check
+logging.debug("This is a debug message.")
