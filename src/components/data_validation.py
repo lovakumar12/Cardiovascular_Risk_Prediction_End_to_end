@@ -30,12 +30,24 @@ class DataValidation:
             self._schema_config =read_yaml_file(file_path=SCHEMA_FILE_PATH)
         except Exception as e:
             raise Cardeo_risk_Exception(e,sys)
+        
+
+    @staticmethod
+    def read_data(file_path) -> DataFrame:
+        try:
+            return pd.read_csv(file_path)
+        except Exception as e:
+            raise Cardeo_risk_Exception(e, sys)
+
+
+
+
 
     def validate_number_of_columns(self, dataframe: DataFrame) -> bool:
         """
         Method Name :   validate_number_of_columns
         Description :   This method validates the number of columns
-
+        
         Output      :   Returns bool value based on validation results
         On Failure  :   Write an exception log and then raise an exception
         """
@@ -50,7 +62,7 @@ class DataValidation:
         """
         Method Name :   is_column_exist
         Description :   This method validates the existence of a numerical and categorical columns
-
+        
         Output      :   Returns bool value based on validation results
         On Failure  :   Write an exception log and then raise an exception
         """
@@ -76,38 +88,14 @@ class DataValidation:
             return False if len(missing_categorical_columns)>0 or len(missing_numerical_columns)>0 else True
         except Exception as e:
             raise Cardeo_risk_Exception(e, sys) from e
-
-
-
-    def detect_missing_values(self, dataframe: DataFrame) -> bool:
-        """Method Name :   detect_missing_values
-        Description :   This method validates if there are any missing values in the data
-        Output      :   Returns bool value based on validation results
-        On Failure  :   Write an exception log and then raise an exception
-        """
-        try:
-            missing_values_status = dataframe.isnull().values.any()
-            logging.info(f"Missing values detected: {missing_values_status}")
-            return missing_values_status
-        except Exception as e:
-            raise Cardeo_risk_Exception(e, sys)
-
-
-
-    @staticmethod
-    def read_data(file_path) -> DataFrame:
-        try:
-            return pd.read_csv(file_path)
-        except Exception as e:
-            raise Cardeo_risk_Exception(e, sys)
-
-
+           
+    
 
     def detect_dataset_drift(self, reference_df: DataFrame, current_df: DataFrame, ) -> bool:
         """
         Method Name :   detect_dataset_drift
         Description :   This method validates if drift is detected
-
+        
         Output      :   Returns bool value based on validation results
         On Failure  :   Write an exception log and then raise an exception
         """
@@ -129,7 +117,7 @@ class DataValidation:
             return drift_status
         except Exception as e:
             raise Cardeo_risk_Exception(e, sys) from e
-
+        
 
 
     def detect_duplicates(self, dataframe: DataFrame) -> bool:
@@ -137,14 +125,30 @@ class DataValidation:
         Description :   This method validates if there are any duplicate values in the data
         Output      :   Returns bool value based on validation results
         On Failure  :   Write an exception log and then raise an exception
-        """
+       """
         try:
             duplicate_values_status = dataframe.duplicated().any()
             logging.info(f"Duplicate values detected: {duplicate_values_status}")
             return duplicate_values_status
         except Exception as e:
             raise Cardeo_risk_Exception(e, sys)
+        
 
+    def detect_missing_values(self, dataframe: DataFrame) -> bool:
+        """Method Name :   detect_missing_values
+        Description :   This method validates if there are any missing values in the data
+        Output      :   Returns bool value based on validation results
+        On Failure  :   Write an exception log and then raise an exception
+        """
+        try:
+            missing_values_status = dataframe.isnull().values.any()
+            logging.info(f"Missing values detected: {missing_values_status}")
+            return missing_values_status
+        except Exception as e:
+            raise Cardeo_risk_Exception(e, sys)
+        
+
+    # another code for checking datatypes match
     def check_data_types(self, dataframe: DataFrame) -> bool:
         """
         Method Name :   check_data_types
@@ -154,78 +158,60 @@ class DataValidation:
         """
         try:
             schema_col_dtype = self._schema_config.get("dtypes",{})
+            #print(f"schema_data {schema_col_dtype}")
             schema_dtype=list(schema_col_dtype.values())
             schema_col=list(schema_col_dtype.keys())
             df_dtype=[dtype.name for dtype in dataframe.dtypes]
+            #print(f"df_dtype {df_dtype}")
             df_col=list(dataframe.columns)
+            #print(f"df_col {df_col}")
+            # Create a dictionary from df_col and df_dtype
+            dataframe_schema = dict(zip(df_col, df_dtype))
+            #print(f"dataframe_schema {dataframe_schema}")
 
             mismatched_columns = []
-
-            for column in schema_col:
-                if column in df_col:
-                    logging.info(f"schema column: {column}  is present in dataframe")
-
-                else:
-                    mismatched_columns.append(f"{column} is missing in the DataFrame.")
-                    logging.info(f"Column not found in dataframe: {column}")
-                    continue
-
-            mismatched_dtypes = []
-
-            for dtype in schema_dtype:
-                if dtype  in df_dtype:
-                    logging.info(f"schema dtype : {dtype}  is present in dataframe dtype")
-                else:
-                    mismatched_dtypes.append(f"Data type mismatch for column: {column} , Found: {dtype}")
+            extra_columns = []
+            missing_columns = []
+             # Check for mismatched or missing columns
+            for column, dtype in schema_col_dtype.items():
+                if column not in dataframe_schema:
+                    missing_columns.append(column)
+                elif dataframe_schema[column] != dtype:
+                    mismatched_columns.append(f"{column}: Expected {dtype}, but got {dataframe_schema[column]}")
+                    logging.info(f"Data type mismatch for column: {column}, Expected: {dtype}, Found: {dataframe_schema[column]}")
+            for column in dataframe_schema.keys():
+                if column not in schema_col_dtype:
+                    extra_columns.append(column)
 
             if len(mismatched_columns)>0:
-                logging.info(f"schema data column mismatched with dataframe_columns.")
+                logging.info(f"schema data column mismatched with dataframe_columns{mismatched_columns}")
 
-            if len(mismatched_dtypes)>0:
-                logging.info(f"schema data type mismatched with dataframe_dtypes.")
+            elif len(missing_columns)>0:
+                logging.info(f"schema data missing columns in dataframe {missing_columns}.")
 
-            return False if len(mismatched_columns)>0 or len(mismatched_dtypes)>0 else True
+            elif len(extra_columns)>0:
+                logging.info(f"Extra columns in dataframe: {extra_columns}")
+            else:
+                logging.info("Schemas data match perfectly! with dataframe data types.")
+
+            return False if len(mismatched_columns)>0 or len(missing_columns)>0 or len(extra_columns) else True
 
 
         except Exception as e:
             raise Cardeo_risk_Exception(e, sys)
+        
+    
 
-
-
-    def rename_columns(self, dataframe: DataFrame) -> bool:
-        """
-        Method Name :   rename_columns
-        Description :   Renames columns based on the schema's column_rename section.
-        Output      :   Returns True if column renaming is successful, False otherwise.
-        On Failure  :   Logs the exception and raises it.
-        """
-        try:
-            # Access column_rename mapping from schema
-            renamed_columns = self._schema_config.get("column_rename", {})
-            if not renamed_columns:
-                logging.info("No columns to rename as per schema configuration.")
-                return True
-
-
-            # Rename columns in the dataframe
-            dataframe.rename(columns=renamed_columns, inplace=True)
-            logging.info(f"Columns successfully renamed: {renamed_columns}.")
-            return True
-        except Exception as e:
-            raise Cardeo_risk_Exception(e, sys)
-
-
-
-
-
-
-
-
+            
+        
+     
+        
+    
     def initiate_data_validation(self) -> DataValidationArtifact:
         """
         Method Name :   initiate_data_validation
         Description :   This method initiates the data validation component for the pipeline
-
+        
         Output      :   Returns bool value based on validation results
         On Failure  :   Write an exception log and then raise an exception
         """
@@ -255,19 +241,8 @@ class DataValidation:
             if not status:
                 validation_error_msg += f"columns are missing in test dataframe."
 
-            status = self.detect_missing_values(dataframe=train_df)
-            if status:
-                validation_error_msg += "Missing values detected in training dataframe."
 
-
-            status = self.detect_missing_values(dataframe=test_df)
-            if status:
-                validation_error_msg += "Missing values detected in test dataframe."
-
-
-
-
-
+            
             validation_status = len(validation_error_msg) == 0
 
             if validation_status:
@@ -290,6 +265,15 @@ class DataValidation:
             if status:
                 validation_error_msg += "Duplicates detected in test dataframe."
 
+            status = self.detect_missing_values(dataframe=train_df)
+            if status:
+                validation_error_msg += "Missing values detected in training dataframe."
+
+
+            status = self.detect_missing_values(dataframe=test_df)
+            if status:
+                validation_error_msg += "Missing values detected in test dataframe."
+
             status = self.check_data_types(dataframe=train_df)
             logging.info(f"all Columns are data type matched in training dataframe: {status}")
             if not status:
@@ -303,25 +287,8 @@ class DataValidation:
 
 
 
-
-             #Rename columns in training dataframe
-            status = self.rename_columns(dataframe=train_df)
-            logging.info(f"Columns renamed in training dataframe: {status}")
-            if not status:
-                validation_error_msg += "Column renaming failed in training dataframe."
-
-           # Rename columns in testing dataframe
-            status = self.rename_columns(dataframe=test_df)
-            logging.info(f"Columns renamed in testing dataframe: {status}")
-            if not status:
-                validation_error_msg += "Column renaming failed in testing dataframe."
-
-
-
-
-
-
-
+                   
+            
 
             data_validation_artifact = DataValidationArtifact(
                 validation_status=validation_status,
@@ -333,3 +300,4 @@ class DataValidation:
             return data_validation_artifact
         except Exception as e:
             raise  Cardeo_risk_Exception(e, sys) from e
+

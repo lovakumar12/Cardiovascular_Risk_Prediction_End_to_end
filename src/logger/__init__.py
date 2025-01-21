@@ -48,4 +48,7 @@ console_handler = logging.StreamHandler()
 logging.getLogger().addHandler(console_handler)
 
 # Example log statement to check
-logging.debug("This is a debug message.")
+#logging.debug("This is a debug message.")
+
+# Suppress pymongo debug logs
+logging.getLogger("pymongo").setLevel(logging.WARNING)
