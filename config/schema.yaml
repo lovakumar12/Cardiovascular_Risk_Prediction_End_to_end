@@ -60,6 +60,42 @@ categorical_columns:
    - is_smoking
 
 
-
+column_rename:
+  cigsPerDay : "cigs_per_day"
   
+column_rename2:
+  cigsPerDay:
+    name: cigs_per_day
+    dtype: int64
 
+num_features:
+   - id
+   - age
+   - education
+   - BPMeds
+   - prevalentStroke
+   - prevalentHyp
+   - diabetes
+   - totChol
+   - sysBP
+   - diaBP
+   - BMI
+   - heartRate 
+   - glucose
+   - TenYearCHD
+
+or_columns: 
+   - sex
+   - is_smoking
+oh_columns: 
+   - cigs_per_day
+
+transform_columns:
+   - cigs_per_day
+
+drop_columns:
+  - ID
+  - sex
+  - is_smoking
+  - cigsPerDay
+  
