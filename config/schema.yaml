@@ -69,9 +69,9 @@ categorical_columns:
 #     dtype: int64
 
 num_features:
-   - id
    - age
    - education
+   - cigsPerDay         
    - BPMeds
    - prevalentStroke
    - prevalentHyp
@@ -82,7 +82,7 @@ num_features:
    - BMI
    - heartRate 
    - glucose
-   - TenYearCHD
+   #- TenYearCHD
 
 # or_columns: 
 #    - sex
@@ -91,8 +91,12 @@ oh_columns:
    - sex
    - is_smoking
 
-# transform_columns:
-#    - cigs_per_day
+transform_columns:
+   - age 
+   - totChol
+   - BMI
+   - heartRate
+   - glucose
 
 # replace_invalid_values_in_columns:
 #    - cigs_per_day
@@ -100,7 +104,7 @@ oh_columns:
 
 drop_columns:
   - id
-  - sex
-  - is_smoking
+  #- sex
+  #- is_smoking
   
   
