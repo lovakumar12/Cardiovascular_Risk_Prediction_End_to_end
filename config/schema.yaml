@@ -60,13 +60,13 @@ categorical_columns:
    - is_smoking
 
 
-column_rename:
-  cigsPerDay : "cigs_per_day"
+# column_rename:
+#   cigsPerDay : "cigs_per_day"
   
-column_rename2:
-  cigsPerDay:
-    name: cigs_per_day
-    dtype: int64
+# column_rename2:
+#   cigsPerDay:
+#     name: cigs_per_day
+#     dtype: int64
 
 num_features:
    - id
@@ -84,18 +84,23 @@ num_features:
    - glucose
    - TenYearCHD
 
-or_columns: 
+# or_columns: 
+#    - sex
+#    - is_smoking
+oh_columns: 
    - sex
    - is_smoking
-oh_columns: 
-   - cigs_per_day
 
-transform_columns:
-   - cigs_per_day
+# transform_columns:
+#    - cigs_per_day
+
+# replace_invalid_values_in_columns:
+#    - cigs_per_day
+  
 
 drop_columns:
-  - ID
+  - id
   - sex
   - is_smoking
-  - cigsPerDay
+  
   

@@ -137,32 +137,63 @@ class DataTransformation:
         except Exception as e:
             raise Cardeo_risk_Exception(e, sys)  # Custom exception to handle errors
 
-    @staticmethod
-    def process_cigs_per_day_column(df):
-        """
-        Process the 'cigsPerDay' column:
-        - Rename the column to 'cigs_per_day'.
-        - Update the values based on consumption levels:
-            - 0: 'No Consumption'
-            - >0 and <20: 'Average Consumption'
-            - >=20: 'High Consumption'
-        """
-        try:
-            # Rename the column
-            df.rename(columns={'cigsPerDay': 'cigs_per_day'}, inplace=True)
+    # @staticmethod
+    # def process_cigs_per_day_column(df):
+    #     try:
+    #         df.rename(columns={'cigsPerDay': 'cigs_per_day'}, inplace=True)
+    #         # Convert the column to numeric, coercing non-numeric values to NaN
+    #         df['cigs_per_day'] = pd.to_numeric(df['cigs_per_day'], errors='coerce')
 
-            # Update values in the renamed column
-            for i in range(len(df)):
-                if df['cigs_per_day'][i] == 0:
-                    df['cigs_per_day'][i] = 'No Consumption'
-                elif 0 < df['cigs_per_day'][i] < 20:
-                    df['cigs_per_day'][i] = 'Average Consumption'
-                else:
-                    df['cigs_per_day'][i] = 'High Consumption'
+    #         # Replace NaN values with 0 or another appropriate default
+    #         df['cigs_per_day'].fillna(0, inplace=True)
 
-            return df
-        except Exception as e:
-            raise Cardeo_risk_Exception(e, sys)
+    #         # Ensure all values are integers
+    #         df['cigs_per_day'] = df['cigs_per_day'].astype(int)
+
+    #         # Apply your logic
+    #         for i in range(len(df)):
+    #             if 0 < df['cigs_per_day'][i] < 20:
+    #                 df['cigs_per_day'][i] = 10
+    #             elif 20 <= df['cigs_per_day'][i]:
+    #                 df['cigs_per_day'][i] = 30
+
+    #         return df
+
+    #     except Exception as e:
+    #         #logging.error(f"Error at index {i}, value: {df.loc[i, 'cigs_per_day']}")
+    #         raise Cardeo_risk_Exception(e, sys)
+
+    # def process_cigs_per_day_column(df):
+    #     """
+    #     Process the 'cigsPerDay' column:
+    #     - Rename the column to 'cigs_per_day'.
+    #     - Update the values based on consumption levels:
+    #         - 0: 'No Consumption'
+    #         - >0 and <20: 'Average Consumption'
+    #         - >=20: 'High Consumption'
+    #     """
+    #     try:
+    #         # Rename the column
+    #         df.rename(columns={'cigsPerDay': 'cigs_per_day'}, inplace=True)
+    #         df['cigs_per_day'] = df['cigs_per_day'].astype(str)
+
+    #         # Update values in the renamed column
+    #         # for i in range(len(df)):
+    #         #     if df['cigs_per_day'][i] == 0:
+    #         for i, row in df.iterrows():
+    #             if row['cigs_per_day'] == '0':  # or whatever your condition is
+    #                 df.loc[i, 'cigs_per_day'] = 'No Consumption'
+
+    #                 #  df['cigs_per_day'][i] = 'No Consumption'
+    #             elif 0 < df['cigs_per_day'][i] < 20:
+    #                 df['cigs_per_day'][i] = 'Average Consumption'
+    #             else:
+    #                 df['cigs_per_day'][i] = 'High Consumption'
+
+    #         return df
+    #     except Exception as e:
+    #         logging.error(f"Error at index {i}, value: {df.loc[i, 'cigs_per_day']}")
+    #         raise Cardeo_risk_Exception(e, sys)
 
 
 
@@ -224,7 +255,7 @@ class DataTransformation:
             #])
 
 
-            ordinal_encoder = OrdinalEncoder()  # Ordinal encoding for specified columns
+            #ordinal_encoder = OrdinalEncoder()  # Ordinal encoding for specified columns
 
 
             logging.info("Initialized StandardScaler, OneHotEncoder, OrdinalEncoder")
@@ -234,8 +265,8 @@ class DataTransformation:
             # Get columns from schema configuration
             num_features = self._schema_config['num_features']
             oh_columns = self._schema_config['oh_columns']
-            or_columns = self._schema_config['or_columns']
-            transform_columns = self._schema_config['transform_columns']
+            #or_columns = self._schema_config['or_columns']
+            #transform_columns = self._schema_config['transform_columns']
 
 
             logging.info("Initialize PowerTransformer")
@@ -247,8 +278,8 @@ class DataTransformation:
             preprocessor = ColumnTransformer(
                 [
                     ("OneHotEncoder", oh_transformer, oh_columns),
-                    ("Ordinal_Encoder", ordinal_encoder, or_columns),
-                    ("Transformer", transform_pipe, transform_columns),
+                    #("Ordinal_Encoder", ordinal_encoder, or_columns),
+                    #("Transformer", transform_pipe, transform_columns),
                     ("StandardScaler", numeric_transformer, num_features)
                 ]
             )
@@ -280,13 +311,14 @@ class DataTransformation:
                 test_df = DataTransformation.read_data(file_path=self.data_ingestion_artifact.test_file_path)
 
                 #Replace invalid values in specified columns
-                target_columns = self._schema_config['replace_invalid_values_in_columns']
-                train_df = self.replace_null_with_median(train_df, target_columns)
-                test_df = self.replace_null_with_median(test_df, target_columns)
+                # target_columns = self._schema_config['replace_invalid_values_in_columns']
+                # train_df = self.replace_null_with_median(train_df, target_columns)
+                # test_df = self.replace_null_with_median(test_df, target_columns)
 
 
-
-
+                train_df = self.replace_null_with_median(train_df)
+                test_df = self.replace_null_with_median(test_df)
+                
                 train_df = self.replace_null_with_mean(train_df)
                 test_df = self.replace_null_with_mean(test_df)
 
@@ -297,11 +329,15 @@ class DataTransformation:
                 train_df = self.remove_duplicates(train_df)
                 test_df = self.remove_duplicates(test_df)
                 
-                train_df= self.process_cigs_per_day_column(train_df)
-                test_df= self.process_cigs_per_day_column(test_df)
+                # train_df= self.process_cigs_per_day_column(train_df)
+                # test_df= self.process_cigs_per_day_column(test_df)
                 
                 input_feature_train_df = train_df.drop(columns=[TARGET_COLUMN], axis=1)
                 target_feature_train_df = train_df[TARGET_COLUMN]
+
+
+
+
 
                 logging.info("Got train features and test features of Training dataset")
 
@@ -309,8 +345,14 @@ class DataTransformation:
 
                 logging.info("drop the columns in drop_cols of Training dataset")
 
-                input_feature_train_df = drop_columns(df=input_feature_train_df, cols = drop_cols)
+                #input_feature_train_df = drop_columns(df=input_feature_train_df, cols = drop_cols,errors='ignore')
+                
+                # Drop columns, ignoring missing ones
+                input_feature_train_df = input_feature_train_df.drop(columns=drop_cols, errors='ignore')
+                logging.info(f"Columns successfully dropped (ignoring missing ones). Remaining columns: {input_feature_train_df.columns.tolist()}")
 
+                
+                
 
                 #incase target column categorical, replace with target value mapping with numerical values from estimator.py
                 #target_feature_train_df = target_feature_train_df.replace(TargetValueMapping()._asdict())

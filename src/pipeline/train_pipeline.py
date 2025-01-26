@@ -63,21 +63,6 @@ class TrainPipeline:
 
         except Exception as e:
             raise Cardeo_risk_Exception(e, sys) from e
-
-
-    def run_pipeline(self,) -> None:
-        """
-        This method of TrainPipeline class is responsible for running the training pipeline
-        """
-        try:
-            logging.info("Entered the run_pipeline method of TrainPipeline class")
-            data_ingestion_artifact = self.start_data_ingestion()
-            logging.info("Data Ingestion is done")
-            data_validation_artifact = self.start_data_validation(data_ingestion_artifact=data_ingestion_artifact)
-            logging.info("Data Validation is done")
-
-        except Exception as e:
-            raise Cardeo_risk_Exception(e, sys) from e
         
         
     def start_data_transformation(self, data_ingestion_artifact: DataIngestionArtifact, data_validation_artifact: DataValidationArtifact) -> DataTransformationArtifact:
@@ -96,3 +81,36 @@ class TrainPipeline:
 
 
 
+    def run_pipeline(self,) -> None:
+        """
+        This method of TrainPipeline class is responsible for running the training pipeline
+        """
+        try:
+            logging.info("Entered the run_pipeline method of TrainPipeline class")
+            data_ingestion_artifact = self.start_data_ingestion()
+            logging.info("Data Ingestion is done")
+
+            data_validation_artifact = self.start_data_validation(data_ingestion_artifact=data_ingestion_artifact)
+            logging.info("Data Validation is done")
+
+            data_transformation_artifact = self.start_data_transformation(
+                data_ingestion_artifact=data_ingestion_artifact, data_validation_artifact=data_validation_artifact)
+            logging.info("Data Transformation is done")
+
+            # model_trainer_artifact = self.start_model_trainer(data_transformation_artifact=data_transformation_artifact)
+
+            # model_evaluation_artifact = self.start_model_evaluation(data_ingestion_artifact=data_ingestion_artifact,
+            #                                                         model_trainer_artifact=model_trainer_artifact)
+            # logging.info("Model Evaluation is done")
+
+
+            # if not model_evaluation_artifact.is_model_accepted:
+            #     logging.info(f"Model not accepted.")
+            #     return None
+            # model_pusher_artifact = self.start_model_pusher(model_evaluation_artifact=model_evaluation_artifact)
+
+
+
+
+        except Exception as e:
+            raise Cardeo_risk_Exception(e, sys) from e
