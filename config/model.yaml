@@ -48,3 +48,101 @@ model_selection:
       - 3
       - 5
       - 9
+
+  module_2:
+    class: SVC
+    module: sklearn.svm
+    params:
+      kernel: rbf
+      C: 1.0
+      gamma: scale
+    search_param_grid:
+      kernel:
+      - linear
+      - poly
+      - rbf
+      - sigmoid
+      C:
+      - 0.1
+      - 1
+      - 10
+      gamma:
+      - scale
+      - auto
+
+  module_3:
+    class: LogisticRegression
+    module: sklearn.linear_model
+    params:
+      solver: liblinear
+      penalty: l2
+      C: 1.0
+    search_param_grid:
+      solver:
+      - liblinear
+      - saga
+      penalty:
+      - l1
+      - l2
+      C:
+      - 0.01
+      - 0.1
+      - 1
+      - 10
+
+  module_4:
+    class: DecisionTreeClassifier
+    module: sklearn.tree
+    params:
+      criterion: gini
+      max_depth: 5
+    search_param_grid:
+      criterion:
+      - gini
+      - entropy
+      max_depth:
+      - 5
+      - 10
+      - 20
+
+  module_5:
+    class: GradientBoostingClassifier
+    module: sklearn.ensemble
+    params:
+      learning_rate: 0.1
+      n_estimators: 100
+      max_depth: 3
+    search_param_grid:
+      learning_rate:
+      - 0.01
+      - 0.1
+      - 0.2
+      n_estimators:
+      - 50
+      - 100
+      - 200
+      max_depth:
+      - 3
+      - 5
+      - 7
+
+  # module_6:
+  #   class: XGBClassifier
+  #   module: xgboost
+  #   params:
+  #     learning_rate: 0.1
+  #     n_estimators: 100
+  #     max_depth: 3
+  #   search_param_grid:
+  #     learning_rate:
+  #     - 0.01
+  #     - 0.1
+  #     - 0.2
+  #     n_estimators:
+  #     - 50
+  #     - 100
+  #     - 200
+  #     max_depth:
+  #     - 3
+  #     - 5
+  #     - 7
