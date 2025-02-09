@@ -1,0 +1,141 @@
+
+
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Cardiovascular Risk Prediction</title>
+     <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" 
+     integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+ </head>
+ <body class="bg-light">
+     <div class="container mt-5">
+         <div class="card shadow-lg p-4">
+             <h2 class="text-center mb-4">Cardiovascular Risk Assessment</h2>
+             <form id="predictionForm">
+                 <div class="row g-3">
+                     <div class="col-md-6">
+                         <label for="age" class="form-label">Age</label>
+                         <input type="number" class="form-control" id="age" name="age" required>
+                     </div>
+                     <div class="col-md-6">
+                         <label for="education" class="form-label">Education Level</label>
+                         <select class="form-select" id="education" name="education">
+                             <option selected>Choose...</option>
+                             <option value="1">Primary</option>
+                             <option value="2">Secondary</option>
+                             <option value="3">Graduates</option>
+                             <option value="4">Post Graduates</option>
+                         </select>
+                     </div>
+                     <div class="col-md-6">
+                         <label for="BPMeds" class="form-label">Blood Pressure Medications</label>
+                         <select class="form-select" id="BPMeds" name="BPMeds">
+                             <option value="1">Yes</option>
+                             <option value="0">No</option>
+                         </select>
+                     </div>
+                     <div class="col-md-6">
+                         <label for="cigsPerDay" class="form-label">Cigarettes Per Day</label>
+                         <input type="number" class="form-control" id="cigsPerDay" name="cigsPerDay">
+                     </div>
+                     <div class="col-md-6">
+                         <label for="prevalentStroke" class="form-label">Prevalent Stroke</label>
+                         <select class="form-select" id="prevalentStroke" name="prevalentStroke">
+                             <option value="1">Yes</option>
+                             <option value="0">No</option>
+                         </select>
+                     </div>
+                     <div class="col-md-6">
+                         <label for="prevalentHyp" class="form-label">Prevalent Hypertension</label>
+                         <select class="form-select" id="prevalentHyp" name="prevalentHyp">
+                             <option value="1">Yes</option>
+                             <option value="0">No</option>
+                         </select>
+                     </div>
+                     <div class="col-md-6">
+                         <label for="diabetes" class="form-label">Diabetes</label>
+                         <select class="form-select" id="diabetes" name="diabetes">
+                             <option value="1">Yes</option>
+                             <option value="0">No</option>
+                         </select>
+                     </div>
+                     <div class="col-md-6">
+                         <label for="totChol" class="form-label">Total Cholesterol (100-600)</label>
+                         <input type="number" class="form-control" id="totChol" name="totChol">
+                     </div>
+                     <div class="col-md-6">
+                         <label for="sysBP" class="form-label">Systolic Blood Pressure (80-250)</label>
+                         <input type="number" class="form-control" id="sysBP" name="sysBP">
+                     </div>
+                     <div class="col-md-6">
+                         <label for="diaBP" class="form-label">Diastolic Blood Pressure (40-150)</label>
+                         <input type="number" class="form-control" id="diaBP" name="diaBP">
+                     </div>
+                     <div class="col-md-6">
+                         <label for="BMI" class="form-label">Body Mass Index (BMI) (10-50)</label>
+                         <input type="number" step="0.1" class="form-control" id="BMI" name="BMI">
+                     </div>
+                     <div class="col-md-6">
+                         <label for="heartRate" class="form-label">Heart Rate (50-150)</label>
+                         <input type="number" class="form-control" id="heartRate" name="heartRate">
+                     </div>
+                     <div class="col-md-6">
+                         <label for="glucose" class="form-label">Glucose (70-270)</label>
+                         <input type="number" class="form-control" id="glucose" name="glucose">
+                     </div>
+                     <div class="col-md-6">
+                         <label for="sex" class="form-label">Sex</label>
+                         <select class="form-select" id="sex" name="sex">
+                             <option value="1">Male</option>
+                             <option value="0">Female</option>
+                         </select>
+                     </div>
+                     <div class="col-md-6">
+                         <label for="is_smoking" class="form-label">Smoking</label>
+                         <select class="form-select" id="is_smoking" name="is_smoking">
+                             <option value="1">Yes</option>
+                             <option value="0">No</option>
+                         </select>
+                     </div>
+                 </div>
+                 <div class="mt-4 text-center">
+                     <button type="submit" class="btn btn-primary">Predict</button>
+                 </div>
+             </form>
+             <div class="text-center text-black mt-4">
+                 <h2 class="display-4 fw-bolder" id="predictionResult">Cardiovascular Risk Status: Waiting for Prediction...</h2>
+             </div>
+         </div>
+     </div>
+     
+     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+     <script type="text/javascript">
+         $(document).ready(function() {
+             $("#predictionForm").submit(function(event) {
+                 event.preventDefault();
+                 let formData = {};
+                 $(this).serializeArray().forEach(item => {
+                     formData[item.name] = isNaN(item.value) ? item.value : Number(item.value);
+                 });
+ 
+                 $.ajax({
+                     url: "/predict",
+                     type: "POST",
+                     contentType: "application/json",
+                     data: JSON.stringify(formData),
+                     success: function(response) {
+                         $("#predictionResult").text("Cardiovascular Risk Status: " + (response.status || "Prediction Failed!"));
+                     },
+                     error: function() {
+                         $("#predictionResult").text("Error in fetching result.");
+                     }
+                 });
+             });
+         });
+     </script>
+ </body>
+ </html>
+ 

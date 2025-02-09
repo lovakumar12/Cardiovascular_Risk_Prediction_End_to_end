@@ -14,7 +14,7 @@ from src.logger import logging
 from src.utils.main_utils import load_numpy_array_data, read_yaml_file, load_object, save_object
 from src.entity.config_entity import ModelTrainerConfig
 from src.entity.artifact_entity import DataTransformationArtifact, ModelTrainerArtifact, ClassificationMetricArtifact
-from src.entity.estimator import CardeovasularModel  # Ensure that CreditCardModel is defined in estimator module
+from src.entity.estimator import CardeovasularModel  # Ensure that CardeoRiskModel is defined in estimator module
 
 class ModelTrainer:
     def __init__(self, data_transformation_artifact: DataTransformationArtifact,

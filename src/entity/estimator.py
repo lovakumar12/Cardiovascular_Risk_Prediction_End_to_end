@@ -42,6 +42,20 @@ class CardeovasularModel:
             logging.info("Using the trained model to get predictions")
 
             transformed_feature = self.preprocessing_object.transform(dataframe)
+            ###################################################################
+            #transformed_feature = transformed_feature.dropna()
+            from sklearn.impute import SimpleImputer
+
+            imputer = SimpleImputer(strategy='mean')  # You can use 'median' or 'most_frequent' based on your data
+            transformed_feature = imputer.fit_transform(transformed_feature)
+
+            ########################################################
+            import numpy as np
+
+# Check if there are any NaN values in the transformed_feature
+            if np.isnan(transformed_feature).any():
+              raise ValueError("Input data contains NaN values. Please handle missing values before prediction.")
+            ######################################
 
             logging.info("Used the trained model to get predictions")
             return self.trained_model_object.predict(transformed_feature)

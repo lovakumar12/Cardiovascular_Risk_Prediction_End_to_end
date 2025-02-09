@@ -105,26 +105,26 @@ model_selection:
       - 10
       - 20
 
-  module_5:
-    class: GradientBoostingClassifier
-    module: sklearn.ensemble
-    params:
-      learning_rate: 0.1
-      n_estimators: 100
-      max_depth: 3
-    search_param_grid:
-      learning_rate:
-      - 0.01
-      - 0.1
-      - 0.2
-      n_estimators:
-      - 50
-      - 100
-      - 200
-      max_depth:
-      - 3
-      - 5
-      - 7
+  # module_5:
+  #   class: GradientBoostingClassifier
+  #   module: sklearn.ensemble
+  #   params:
+  #     learning_rate: 0.1
+  #     n_estimators: 100
+  #     max_depth: 3
+  #   search_param_grid:
+  #     learning_rate:
+  #     - 0.01
+  #     - 0.1
+  #     - 0.2
+  #     n_estimators:
+  #     - 50
+  #     - 100
+  #     - 200
+  #     max_depth:
+  #     - 3
+  #     - 5
+  #     - 7
 
   # module_6:
   #   class: XGBClassifier

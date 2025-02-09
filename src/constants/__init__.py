@@ -78,7 +78,11 @@ REGION_NAME = "us-east-1"
 
 #code for adding bucketname in constant file
 MODEL_EVALUATION_CHANGED_THRESHOLD_SCORE: float = 0.02
-MODEL_BUCKET_NAME = "cardeo-vascular-risk-model-2024"
+MODEL_BUCKET_NAME = "cardeo-vascular-risk-model-2024"  
 MODEL_PUSHER_S3_KEY = "model-registry"
 
+# adding host constant file
+
+APP_HOST = "127.0.0.1"  # or "0.0.0.0"
+APP_PORT = 8080
 
