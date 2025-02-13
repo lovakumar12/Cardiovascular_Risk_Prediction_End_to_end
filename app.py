@@ -277,6 +277,8 @@ logger = logging.getLogger(__name__)
 
 
 import logging
+import pandas as pd
+from sklearn.impute import SimpleImputer
 from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -343,7 +345,8 @@ async def trainRouteClient():
     except Exception as e:
         logger.error(f"Error during training: {e}")
         return JSONResponse(content={"status": "Error", "error": str(e)}, status_code=500)
-
+    
+    
 @app.post("/predict")
 async def predictRouteClient(data: CardioRiskRequest):
     try:
@@ -352,20 +355,63 @@ async def predictRouteClient(data: CardioRiskRequest):
         # Convert request data to DataFrame
         cardio_risk_data = CardeoRiskData(**data.dict())
         cardio_risk_df = cardio_risk_data.get_CardeoRisk_input_data_frame()
-
+        
+        ##########################
+        # Preprocess the input data
+        # Ensure all values are numeric and handle missing values
+        cardio_risk_df = cardio_risk_df.apply(pd.to_numeric, errors='coerce')  # Convert non-numeric values to NaN
+        
+        # Handle missing values using an imputer
+        imputer = SimpleImputer(strategy='mean')  # Replace NaN with the mean of each column
+        cardio_risk_df = pd.DataFrame(imputer.fit_transform(cardio_risk_df), columns=cardio_risk_df.columns)
+        
+        # Ensure the input data has the correct number of features
+        expected_features = ['age', 'education', 'BPMeds', 'cigsPerDay', 'prevalentStroke', 'prevalentHyp', 'diabetes', 'totChol', 'sysBP', 'diaBP', 'BMI', 'heartRate', 'glucose', 'sex', 'is_smoking']
+        missing_features = set(expected_features) - set(cardio_risk_df.columns)
+        if missing_features:
+            raise ValueError(f"Missing features: {missing_features}")
+        
+        # Reorder columns to match the expected order
+        cardio_risk_df = cardio_risk_df[expected_features]
+        
+        ##########################
         # Make prediction
         model_predictor = CardeoRiskClassifier()
         prediction = model_predictor.predict(dataframe=cardio_risk_df)[0]
-
+        
         # Determine status
         status = "Heart at Risk" if prediction == 1 else "No Heart Risk"
         logger.info(f"Prediction result: {status}")
-
         return JSONResponse(content={"status": status})
     
     except Exception as e:
         logger.error(f"Prediction error: {e}")
         return JSONResponse(content={"status": "Error", "error": str(e)}, status_code=500)
+
+# @app.post("/predict")
+# async def predictRouteClient(data: CardioRiskRequest):
+#     try:
+#         logger.info(f"Received prediction request: {data}")
+        
+#         # Convert request data to DataFrame
+#         cardio_risk_data = CardeoRiskData(**data.dict())
+#         cardio_risk_df = cardio_risk_data.get_CardeoRisk_input_data_frame()
+        
+#         ##########################
+
+#         # Make prediction
+#         model_predictor = CardeoRiskClassifier()
+#         prediction = model_predictor.predict(dataframe=cardio_risk_df)[0]
+
+#         # Determine status
+#         status = "Heart at Risk" if prediction == 1 else "No Heart Risk"
+#         logger.info(f"Prediction result: {status}")
+
+#         return JSONResponse(content={"status": status})
+    
+#     except Exception as e:
+#         logger.error(f"Prediction error: {e}")
+#         return JSONResponse(content={"status": "Error", "error": str(e)}, status_code=500)
 
 if __name__ == "__main__":
     app_run(app, host=APP_HOST, port=APP_PORT)

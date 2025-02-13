@@ -154,6 +154,38 @@
 #####################checking the data_validation.py
 #code in demo.py
 
-from src.pipeline.train_pipeline import TrainPipeline
-pipeline=TrainPipeline()
-pipeline.run_pipeline()
+# from src.pipeline.train_pipeline import TrainPipeline
+# pipeline=TrainPipeline()
+# pipeline.run_pipeline()
+
+# Example test
+from src.pipeline.prediction_pipeline import CardeoRiskData, CardeoRiskClassifier
+from src.entity.S3_estimator import CardeoRiskEstimator
+import pandas as pd
+
+# Sample input data
+input_data = CardeoRiskData(
+    age=45,
+    education="high school",
+    cigsPerDay=10,
+    BPMeds=0,
+    prevalentStroke=0,
+    prevalentHyp=1,
+    diabetes=0,
+    totChol=200,
+    sysBP=120,
+    diaBP=80,
+    BMI=25,
+    heartRate=70,
+    glucose=100,
+    sex="Male",
+    is_smoking="Yes"
+)
+
+# Get input DataFrame
+input_df = input_data.get_CardeoRisk_input_data_frame()
+
+# Initialize estimator and make prediction
+estimator = CardeoRiskEstimator(bucket_name="your_bucket_name", model_path="your_model_path")
+prediction = estimator.predict(input_df)
+print("Prediction:", prediction)

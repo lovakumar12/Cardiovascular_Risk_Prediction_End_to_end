@@ -7,7 +7,7 @@ from src.logger import logging
 from src.entity.artifact_entity import ModelPusherArtifact, ModelEvaluationArtifact
 from src.entity.config_entity import ModelPusherConfig
 from src.entity.S3_estimator import CardeoRiskEstimator
-#from src.constants import MODEL_BUCKET_NAME, MODEL_PUSHER_S3_KEY
+from src.constants import MODEL_BUCKET_NAME, MODEL_PUSHER_S3_KEY
 
 class ModelPusher:
     def __init__(self, model_evaluation_artifact: ModelEvaluationArtifact,

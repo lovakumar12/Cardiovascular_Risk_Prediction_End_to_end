@@ -59,20 +59,44 @@ class CardeoRiskData:
         except Exception as e:
             raise Cardeo_risk_Exception(e, sys) from e
         
-        
+    ################################################################
     def get_CardeoRisk_input_data_frame(self) -> DataFrame:
         try:
+            # Step 1: Get the input data as a dictionary
             CardeoRisk_input_dict = self.get_CardeoRisk_data_as_dict()
+            
+            # Step 2: Create a DataFrame from the dictionary
             df = DataFrame(CardeoRisk_input_dict)
-
-            # Convert all columns to numeric, forcing errors if any non-numeric values exist
+            
+            # Step 3: Convert all columns to numeric, coercing errors to NaN
             df = df.apply(pd.to_numeric, errors='coerce')
-
+            
+            # Step 4: Handle missing values (replace NaN with 0 or another strategy)
+            df.fillna(0, inplace=True)
+            
+            # Step 5: Log the processed DataFrame for debugging
             logging.info(f"Processed input DataFrame:\n{df.head()}")
-
+            
             return df
         except Exception as e:
             raise Cardeo_risk_Exception(e, sys)
+    #################################################    
+    #def get_CardeoRisk_input_data_frame(self) -> DataFrame:
+        # try:
+        #     CardeoRisk_input_dict = self.get_CardeoRisk_data_as_dict()
+        #     df = DataFrame(CardeoRisk_input_dict)
+
+        #     # # Convert all columns to numeric, forcing errors if any non-numeric values exist
+        #     # df = df.apply(pd.to_numeric, errors='coerce')
+            
+        #     # df = df.fillna(0,inplace=True)  # Replace NaN with 0 or another strategy
+
+
+        #     #logging.info(f"Processed input DataFrame:\n{df.head()}")
+
+        #     return df
+        # except Exception as e:
+        #     raise Cardeo_risk_Exception(e, sys)
 
 
     # def get_CardeoRisk_input_data_frame(self)-> DataFrame:
@@ -138,7 +162,10 @@ class CardeoRiskClassifier:
             self.prediction_pipeline_config = prediction_pipeline_config
         except Exception as e:
             raise Cardeo_risk_Exception (e, sys)
-
+        
+    
+    
+    ########################################################
     def predict(self, dataframe) -> str:
         """
         This is the method of CardeoRiskClassifier
@@ -147,18 +174,51 @@ class CardeoRiskClassifier:
         try:
             logging.info("Entered predict method of CardeoRiskClassifier class")
             
-            # Print data types to check for invalid types
+            # Step 1: Print data types to check for invalid types
             logging.info(f"Data types of input dataframe: {dataframe.dtypes}")
             logging.info(f"First few rows of input dataframe:\n{dataframe.head()}")
+            
+            # Step 2: Ensure all columns are numeric
+            if not dataframe.dtypes.apply(lambda x: np.issubdtype(x, np.number)).all():
+                raise ValueError("Input DataFrame contains non-numeric columns!")
+            
+            # Step 3: Check for NaN values
+            if dataframe.isnull().values.any():
+                logging.warning("NaN values found in input DataFrame. Filling with 0.")
+                dataframe.fillna(0, inplace=True)
+            
+            # Step 4: Load the model and make predictions
             model = CardeoRiskEstimator(
                 bucket_name=self.prediction_pipeline_config.model_bucket_name,
                 model_path=self.prediction_pipeline_config.model_file_path,
             )
-            result =  model.predict(dataframe)
-
+            result = model.predict(dataframe)
+            
             return result
-
         except Exception as e:
             raise Cardeo_risk_Exception(e, sys)
+    #######################################################
+
+    # def predict(self, dataframe) -> str:
+    #     """
+    #     This is the method of CardeoRiskClassifier
+    #     Returns: Prediction in string format
+    #     """
+    #     try:
+    #         logging.info("Entered predict method of CardeoRiskClassifier class")
+            
+    #         # Print data types to check for invalid types
+    #         logging.info(f"Data types of input dataframe: {dataframe.dtypes}")
+    #         logging.info(f"First few rows of input dataframe:\n{dataframe.head()}")
+    #         model = CardeoRiskEstimator(
+    #             bucket_name=self.prediction_pipeline_config.model_bucket_name,
+    #             model_path=self.prediction_pipeline_config.model_file_path,
+    #         )
+    #         result =  model.predict(dataframe)
+
+    #         return result
+
+    #     except Exception as e:
+    #         raise Cardeo_risk_Exception(e, sys)
     
     

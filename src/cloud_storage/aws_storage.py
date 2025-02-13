@@ -83,34 +83,57 @@ class SimpleStorageService:
             return bucket
         except Exception as e:
             raise Cardeo_risk_Exception(e, sys) from e
-
-    def get_file_object( self, filename: str, bucket_name: str) -> Union[List[object], object]:
+##########################################################################
+    def get_file_object(self, filename: str, bucket_name: str) -> Union[List[object], object]:
         """
         Method Name :   get_file_object
         Description :   This method gets the file object from bucket_name bucket based on filename
-
         Output      :   list of objects or object is returned based on filename
         On Failure  :   Write an exception log and then raise an exception
-
         Version     :   1.2
         Revisions   :   moved setup to cloud
         """
         logging.info("Entered the get_file_object method of S3Operations class")
-
         try:
+            logging.info(f"Attempting to access bucket: {bucket_name}, prefix: {filename}")
             bucket = self.get_bucket(bucket_name)
-
             file_objects = [file_object for file_object in bucket.objects.filter(Prefix=filename)]
-
+            logging.info(f"Found {len(file_objects)} objects with prefix: {filename}")
             func = lambda x: x[0] if len(x) == 1 else x
-
             file_objs = func(file_objects)
             logging.info("Exited the get_file_object method of S3Operations class")
-
             return file_objs
-
-        except Exception as e:
+        except ClientError as e:
+            logging.error(f"ClientError: {e.response['Error']['Message']}")
             raise Cardeo_risk_Exception(e, sys) from e
+##########################################################################
+    # def get_file_object( self, filename: str, bucket_name: str) -> Union[List[object], object]:
+    #     """
+    #     Method Name :   get_file_object
+    #     Description :   This method gets the file object from bucket_name bucket based on filename
+
+    #     Output      :   list of objects or object is returned based on filename
+    #     On Failure  :   Write an exception log and then raise an exception
+
+    #     Version     :   1.2
+    #     Revisions   :   moved setup to cloud
+    #     """
+    #     logging.info("Entered the get_file_object method of S3Operations class")
+
+    #     try:
+    #         bucket = self.get_bucket(bucket_name)
+
+    #         file_objects = [file_object for file_object in bucket.objects.filter(Prefix=filename)]
+
+    #         func = lambda x: x[0] if len(x) == 1 else x
+
+    #         file_objs = func(file_objects)
+    #         logging.info("Exited the get_file_object method of S3Operations class")
+
+    #         return file_objs
+
+    #     except Exception as e:
+    #         raise Cardeo_risk_Exception(e, sys) from e
 
     def load_model(self, model_name: str, bucket_name: str, model_dir: str = None) -> object:
         """

@@ -5,6 +5,7 @@ from src.exception import Cardeo_risk_Exception
 from src.entity.estimator import CardeovasularModel
 import sys
 from pandas import DataFrame
+from src.logger import logging
 
 
 class CardeoRiskEstimator:
@@ -54,15 +55,54 @@ class CardeoRiskEstimator:
         except Exception as e:
             raise Cardeo_risk_Exception(e, sys)
 
-
-    def predict(self,dataframe:DataFrame):
+    
+    ###########################################################
+    def predict(self, dataframe: DataFrame):
         """
-        :param dataframe:
-        :return:
+        Predict using the loaded model
+        :param dataframe: Input DataFrame for prediction
+        :return: Prediction result
         """
         try:
+            # Step 1: Load the model if not already loaded
             if self.loaded_model is None:
                 self.loaded_model = self.load_model()
+                logging.info("Model Loaded Successfully")
+            
+            # Step 2: Log the input data for debugging
+            logging.info(f"Data Type Before Validation: {type(dataframe)}")
+            logging.info(f"Data Before Validation:\n{dataframe.head()}")
+            
+            # Step 3: Ensure all columns are numeric
+            if not dataframe.dtypes.apply(lambda x: np.issubdtype(x, np.number)).all():
+                raise ValueError("Input DataFrame contains non-numeric columns!")
+            
+            # Step 4: Handle missing values (replace NaN with 0 or another strategy)
+            if dataframe.isnull().values.any():
+                logging.warning("NaN values found in input DataFrame. Filling with 0.")
+                dataframe.fillna(0, inplace=True)
+            
+            # Step 5: Log the processed data for debugging
+            logging.info(f"Processed Data:\n{dataframe.head()}")
+            
+            # Step 6: Make predictions using the loaded model
             return self.loaded_model.predict(dataframe=dataframe)
         except Exception as e:
             raise Cardeo_risk_Exception(e, sys)
+    #############################################################
+    # def predict(self,dataframe:DataFrame):
+    #     """
+    #     :param dataframe:
+    #     :return:
+    #     """
+    #     try:
+    #         if self.loaded_model is None:
+    #             self.loaded_model = self.load_model()
+    #             logging.info(f"Model Loaded Successfully")
+    #             logging.info(f"Data Type Before NaN Check: {type(dataframe)}")
+    #             logging.info(f"Data Before NaN Check: {dataframe}")
+                
+
+    #         return self.loaded_model.predict(dataframe=dataframe)
+    #     except Exception as e:
+    #         raise Cardeo_risk_Exception(e, sys)
